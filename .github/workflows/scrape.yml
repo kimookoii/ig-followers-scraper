@@ -16,6 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
+    # expose PAT_DEPLOY secret as env so it can be referenced in "if" expressions
+    env:
+      PAT_DEPLOY: ${{ secrets.PAT_DEPLOY }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,7 +32,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # prefer lockfile; fall back to install
           if [ -f package-lock.json ]; then
             npm ci
           else
@@ -37,7 +40,6 @@ jobs:
 
       - name: Install Playwright browsers & OS deps
         run: |
-          # installs browsers + necessary OS deps on ubuntu-latest
           npx playwright install --with-deps
 
       - name: Create logs dir
@@ -45,7 +47,6 @@ jobs:
 
       - name: Start server (background)
         run: |
-          # run server in background, save pid and logs
           nohup node index.js > ./logs/server.log 2>&1 &
           echo $! > ./server.pid
           sleep 1
@@ -73,7 +74,6 @@ jobs:
           URL="http://localhost:3000/api/followers?username=${USERNAME}"
           OUT="data.json"
 
-          # try up to 4 times with incremental sleep
           n=0
           until [ $n -ge 4 ]
           do
@@ -104,7 +104,6 @@ jobs:
       - name: Add timestamp to JSON
         run: |
           DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          # requires jq on runner (ubuntu-latest has jq)
           jq --arg date "$DATE" '. + { lastUpdate: $date }' out/ziconkn_.json > out/tmp.json
           mv out/tmp.json out/ziconkn_.json
           echo "Wrote out/ziconkn_.json with lastUpdate=$DATE"
@@ -119,19 +118,17 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         continue-on-error: true
         with:
-          # Use the normal token by default
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: out
-          # optional: set user name/email for commits
           user_name: 'github-actions[bot]'
           user_email: '41898282+github-actions[bot]@users.noreply.github.com'
 
       - name: Fallback deploy using PAT (if primary failed and PAT provided)
-        if: ${{ failure() && (secrets.PAT_DEPLOY != '') }}
+        if: ${{ failure() && env.PAT_DEPLOY != '' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.PAT_DEPLOY }}
+          github_token: ${{ env.PAT_DEPLOY }}
           publish_branch: gh-pages
           publish_dir: out
           user_name: 'deploy-bot'
