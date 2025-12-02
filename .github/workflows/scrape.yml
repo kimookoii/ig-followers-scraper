@@ -2,7 +2,7 @@ name: Update IG Followers
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # update setiap 30 menit
+    - cron: "*/30 * * * *"   # setiap 30 menit
   workflow_dispatch:
 
 jobs:
@@ -13,15 +13,53 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: |
+          npm ci || npm install
+
+      - name: Install Playwright browsers & OS deps
+        run: |
+          # install browsers and system dependencies
+          npx playwright install --with-deps
+
+      - name: Start server (background)
+        run: |
+          # buat log dir
+          mkdir -p ./logs
+          # jalankan server index.js di background, simpan PID
+          nohup node index.js > ./logs/server.log 2>&1 &
+          echo $! > ./server.pid
+
+      - name: Wait for server to be ready
+        run: |
+          # tunggu sampai localhost:3000 merespon (max 60s)
+          for i in $(seq 1 12); do
+            if curl -sS "http://localhost:3000/" >/dev/null 2>&1; then
+              echo "server ready"
+              exit 0
+            fi
+            echo "waiting for server... ($i)"
+            sleep 5
+          done
+          echo "Server did not start:"
+          tail -n +1 ./logs/server.log || true
+          exit 1
+
       - name: Fetch IG API
         run: |
           echo "Fetching Instagram data..."
-          curl -s "http://localhost:3000/api/followers?username=ziconkn_" -o data.json || exit 1
+          # gunakan --fail supaya curl mengembalikan non-zero ketika HTTP error (4xx/5xx)
+          curl -sS --fail "http://localhost:3000/api/followers?username=ziconkn_" -o data.json
 
       - name: Prepare output folder
         run: |
           mkdir -p out
-          mv data.json out/ziconkn_.json
+          mv data.json out/ziconkn_.json || (echo "data file not found" && exit 1)
 
       - name: Add timestamp
         run: |
@@ -35,3 +73,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: out
+
+      - name: Save server log (artifact) for debugging
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-logs
+          path: logs/server.log
