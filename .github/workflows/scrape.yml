@@ -1,13 +1,20 @@
 name: Update IG Followers
 
+# Run every 30 minutes and manual trigger
 on:
   schedule:
-    - cron: "*/30 * * * *"   # setiap 30 menit
+    - cron: "*/30 * * * *"
   workflow_dispatch:
+
+# Grant permissions so GITHUB_TOKEN can push to gh-pages
+permissions:
+  contents: write
+  pages: write
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -17,66 +24,143 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: |
-          npm ci || npm install
+          # prefer lockfile; fall back to install
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Install Playwright browsers & OS deps
         run: |
-          # install browsers and system dependencies
+          # installs browsers + necessary OS deps on ubuntu-latest
           npx playwright install --with-deps
+
+      - name: Create logs dir
+        run: mkdir -p ./logs
 
       - name: Start server (background)
         run: |
-          # buat log dir
-          mkdir -p ./logs
-          # jalankan server index.js di background, simpan PID
+          # run server in background, save pid and logs
           nohup node index.js > ./logs/server.log 2>&1 &
           echo $! > ./server.pid
+          sleep 1
+          echo "Server PID: $(cat ./server.pid)"
 
-      - name: Wait for server to be ready
+      - name: Wait for server to be ready (max ~60s)
         run: |
-          # tunggu sampai localhost:3000 merespon (max 60s)
           for i in $(seq 1 12); do
             if curl -sS "http://localhost:3000/" >/dev/null 2>&1; then
-              echo "server ready"
+              echo "Server ready"
               exit 0
             fi
-            echo "waiting for server... ($i)"
+            echo "Waiting for server... ($i/12)"
             sleep 5
           done
-          echo "Server did not start:"
-          tail -n +1 ./logs/server.log || true
+          echo "Server did not start within expected time. Dumping server.log:"
+          tail -n 200 ./logs/server.log || true
           exit 1
 
-      - name: Fetch IG API
+      - name: Fetch Instagram data (with retries)
+        env:
+          USERNAME: ziconkn_
         run: |
-          echo "Fetching Instagram data..."
-          # gunakan --fail supaya curl mengembalikan non-zero ketika HTTP error (4xx/5xx)
-          curl -sS --fail "http://localhost:3000/api/followers?username=ziconkn_" -o data.json
+          set -euo pipefail
+          URL="http://localhost:3000/api/followers?username=${USERNAME}"
+          OUT="data.json"
+
+          # try up to 4 times with incremental sleep
+          n=0
+          until [ $n -ge 4 ]
+          do
+            echo "curl attempt $((n+1))..."
+            if curl -sS --fail "$URL" -o "$OUT"; then
+              echo "Fetched data to $OUT"
+              exit 0
+            fi
+            n=$((n+1))
+            echo "Request failed, sleeping $((n*5))s..."
+            sleep $((n*5))
+          done
+
+          echo "All attempts failed; show last 300 lines server log:"
+          tail -n 300 ./logs/server.log || true
+          exit 1
 
       - name: Prepare output folder
         run: |
           mkdir -p out
-          mv data.json out/ziconkn_.json || (echo "data file not found" && exit 1)
+          if [ -f data.json ]; then
+            mv data.json out/ziconkn_.json
+          else
+            echo "data.json not found" >&2
+            exit 1
+          fi
 
-      - name: Add timestamp
+      - name: Add timestamp to JSON
         run: |
           DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          # requires jq on runner (ubuntu-latest has jq)
           jq --arg date "$DATE" '. + { lastUpdate: $date }' out/ziconkn_.json > out/tmp.json
           mv out/tmp.json out/ziconkn_.json
+          echo "Wrote out/ziconkn_.json with lastUpdate=$DATE"
 
-      - name: Deploy to GitHub Pages
+      - name: Show git config & remote (debug)
+        run: |
+          git config --list
+          git remote -v || true
+
+      - name: Deploy to GitHub Pages (using GITHUB_TOKEN)
+        id: deploy_primary
         uses: peaceiris/actions-gh-pages@v3
+        continue-on-error: true
         with:
+          # Use the normal token by default
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: out
+          # optional: set user name/email for commits
+          user_name: 'github-actions[bot]'
+          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
 
-      - name: Save server log (artifact) for debugging
+      - name: Fallback deploy using PAT (if primary failed and PAT provided)
+        if: ${{ failure() && (secrets.PAT_DEPLOY != '') }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.PAT_DEPLOY }}
+          publish_branch: gh-pages
+          publish_dir: out
+          user_name: 'deploy-bot'
+          user_email: 'deploy-bot@users.noreply.github.com'
+
+      - name: Upload logs & output on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: server-logs
-          path: logs/server.log
+          name: scrape-debug-artifacts
+          path: |
+            logs/server.log
+            out/ziconkn_.json
+            data.json
+
+      - name: Stop server (cleanup)
+        if: always()
+        run: |
+          if [ -f ./server.pid ]; then
+            pid=$(cat ./server.pid) || true
+            echo "Killing server pid: $pid"
+            kill "$pid" || true
+            rm -f ./server.pid
+          else
+            echo "server.pid not found"
+          fi
+
+      - name: Show last server log (always)
+        if: always()
+        run: |
+          echo "---- server.log (tail -n 200) ----"
+          tail -n 200 ./logs/server.log || true
