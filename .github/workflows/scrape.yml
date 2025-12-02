@@ -108,6 +108,18 @@ jobs:
           mv out/tmp.json out/ziconkn_.json
           echo "Wrote out/ziconkn_.json with lastUpdate=$DATE"
 
+      - name: Generate badge JSON
+        run: |
+          followers=$(jq '.followers' out/ziconkn_.json)
+          cat <<EOF > out/ig_followers_badge.json
+          {
+            "schemaVersion": 1,
+            "label": "Instagram Followers",
+            "message": "${followers}",
+            "color": "8a3ab9"
+          }
+          EOF
+          
       - name: Show git config & remote (debug)
         run: |
           git config --list
