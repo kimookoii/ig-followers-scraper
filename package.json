@@ -1,0 +1,14 @@
+{
+  "name": "ig-scraper",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "node-cache": "^5.1.2",
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.57.0"
+  }
+}
