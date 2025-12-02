@@ -1,0 +1,37 @@
+name: Update IG Followers
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # update setiap 30 menit
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch IG API
+        run: |
+          echo "Fetching Instagram data..."
+          curl -s "http://localhost:3000/api/followers?username=ziconkn_" -o data.json || exit 1
+
+      - name: Prepare output folder
+        run: |
+          mkdir -p out
+          mv data.json out/ziconkn_.json
+
+      - name: Add timestamp
+        run: |
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          jq --arg date "$DATE" '. + { lastUpdate: $date }' out/ziconkn_.json > out/tmp.json
+          mv out/tmp.json out/ziconkn_.json
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: out
