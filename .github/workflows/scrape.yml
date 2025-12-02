@@ -114,7 +114,7 @@ jobs:
           cat <<EOF > out/ig_followers_badge.json
           {
             "schemaVersion": 1,
-            "label": "Instagram Followers",
+            "label": "Instagram",
             "message": "${followers}",
             "color": "8a3ab9"
           }
