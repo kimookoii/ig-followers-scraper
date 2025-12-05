@@ -1,20 +1,4 @@
 {
-  "username": "ziconkn_",
-  "fullName": "",
-  "biography": "",
-  "externalUrl": null,
-  "followers": 5937,
-  "following": 2349,
-  "posts": 3,
-  "profilePic": "https://scontent-atl3-2.cdninstagram.com/v/t51.2885-19/559055822_18401389576185793_7731061224292974601_n.jpg?stp=dst-jpg_s320x320_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby42ODIuYzIifQ&_nc_ht=scontent-atl3-2.cdninstagram.com&_nc_cat=101&_nc_oc=Q6cZ2QHLdBQoIeGox-QiabOCdAdJmZ9eLAOpcCOc9lwb3K6e4Gbnc7Q9WwQUFlEX6Y6oEnw&_nc_ohc=XGYE9T6LY8oQ7kNvwGz5M-O&_nc_gid=kvOcTbV_cYme4AGXIZVolQ&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AflLypsv7gXRniJo4KVA7xd7hp3whDC66ceiHm0l9-58Ug&oe=69392C62&_nc_sid=8b3546",
-  "private": false,
-  "verified": false,
-  "businessAccount": false,
-  "professionalAccount": true,
-  "category": "Cemetery",
-  "joinedRecently": false,
-  "highlightCount": 7,
-  "hasChannel": false,
-  "hasAREffects": false,
-  "lastUpdate": "2025-12-05T21:41:22Z"
+  "error": "Failed to extract IG data",
+  "lastUpdate": "2025-12-05T22:22:25Z"
 }
