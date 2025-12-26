@@ -1,20 +1,4 @@
 {
-  "username": "ziconkn_",
-  "fullName": "",
-  "biography": "",
-  "externalUrl": null,
-  "followers": 5965,
-  "following": 2409,
-  "posts": 3,
-  "profilePic": "https://scontent-ord5-1.cdninstagram.com/v/t51.2885-19/559055822_18401389576185793_7731061224292974601_n.jpg?stp=dst-jpg_s320x320_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby42ODIuYzIifQ&_nc_ht=scontent-ord5-1.cdninstagram.com&_nc_cat=101&_nc_oc=Q6cZ2QE1tFNwPQh_ZGM-Uj6uC2S0fVOsyu3Odw12hf63AejmNX-M0uTXWrvhtcz9XDu_TiM&_nc_ohc=v9BWOr1SmHAQ7kNvwHlLI5Z&_nc_gid=2NGdU7Z6z03Hb2gPnfS-dg&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_Aflw88VP7FCHeBKHkqoFejk55VT8h87FH2fDxRrXUsj6WQ&oe=69546B62&_nc_sid=8b3546",
-  "private": false,
-  "verified": false,
-  "businessAccount": false,
-  "professionalAccount": true,
-  "category": "Cemetery",
-  "joinedRecently": false,
-  "highlightCount": 7,
-  "hasChannel": false,
-  "hasAREffects": false,
-  "lastUpdate": "2025-12-26T12:48:38Z"
+  "error": "Failed to extract IG data",
+  "lastUpdate": "2025-12-26T13:34:59Z"
 }
