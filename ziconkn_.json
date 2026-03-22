@@ -1,20 +1,4 @@
 {
-  "username": "ziconkn_",
-  "fullName": "",
-  "biography": "",
-  "externalUrl": "https://www.instagram.com/ffashaa0",
-  "followers": 6094,
-  "following": 2724,
-  "posts": 6,
-  "profilePic": "https://scontent-ord5-1.cdninstagram.com/v/t51.82787-19/559055822_18401389576185793_7731061224292974601_n.jpg?stp=dst-jpg_s320x320_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby42ODIuYzIifQ&_nc_ht=scontent-ord5-1.cdninstagram.com&_nc_cat=101&_nc_oc=Q6cZ2gF859X3p9nwTuLpDk5XMjS1-l3iiuuQV1N6Boyrsv1GUy3FNMgKO0XLS2jpwgh7H8E&_nc_ohc=E0O5M3ikVMsQ7kNvwFfDqpm&_nc_gid=mGrbhi3xwuS8Lq5-AeMvdg&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AfwAF-UW5Hbn0mF7TBBF2ka7k63fP2SKeaoJGLhIcfAfIQ&oe=69C62BB8&_nc_sid=8b3546",
-  "private": false,
-  "verified": false,
-  "businessAccount": false,
-  "professionalAccount": true,
-  "category": "Cemetery",
-  "joinedRecently": false,
-  "highlightCount": 10,
-  "hasChannel": false,
-  "hasAREffects": false,
-  "lastUpdate": "2026-03-22T20:32:38Z"
+  "error": "Failed to extract IG data",
+  "lastUpdate": "2026-03-22T21:30:20Z"
 }
