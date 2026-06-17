@@ -1,20 +1,4 @@
 {
-  "username": "ziconkn_",
-  "fullName": "",
-  "biography": "",
-  "externalUrl": "https://open.spotify.com/playlist/2geNmGWNkJGFASYKnqzBkk?si=GwQkERVNT_OliEw_qjC0Zg&pi=zjlj8jjrQhimv",
-  "followers": 5906,
-  "following": 3276,
-  "posts": 5,
-  "profilePic": "https://scontent-iad3-1.cdninstagram.com/v/t51.82787-19/701227754_18436830853185793_6190949484783773317_n.jpg?stp=dst-jpg_s320x320_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby43MzYuYzIifQ&_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=101&_nc_oc=Q6cZ2gE0ga9HQ9jRy1RkNmlsQQbny9O8tAMCTr3Cm3IVs2cX12-6n-M43wlp6XPemEC0qZg&_nc_ohc=RD859ERBblkQ7kNvwEyn2b8&_nc_gid=c1HQSBo0k5A2KLWCHVSvpw&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_Af-ey-5s2JeSZ5xGcbktKiCJ8nJ_vPCh0cDaHwqDWq7dPQ&oe=6A37D915&_nc_sid=8b3546",
-  "private": false,
-  "verified": false,
-  "businessAccount": false,
-  "professionalAccount": true,
-  "category": "Cemetery",
-  "joinedRecently": false,
-  "highlightCount": 10,
-  "hasChannel": false,
-  "hasAREffects": false,
-  "lastUpdate": "2026-06-17T02:02:28Z"
+  "error": "Failed to extract IG data",
+  "lastUpdate": "2026-06-17T07:34:37Z"
 }
